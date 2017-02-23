@@ -1,0 +1,41 @@
+apache:
+    image: eboraas/apache
+    ports: 
+        - 8080:80
+    links:
+        - phpfpm
+    volumes:
+        - ./apache/setup.conf:/etc/apache/sites-available/default
+        - ./apache/setup.conf:/etc/apache/sites-enabled/default
+
+        - ./logs/error.log:/var/log/apache/error.log
+        - ./logs/access/log:/var/log/apache/access.log
+
+phpfpm:
+    image: php:fpm
+    ports: 
+        - 9000:9000
+    
+mysql:
+    image: mariadb
+    environment:
+        MYSQL_ROOT_PASSWORD: admin
+
+phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    links:
+        - mysql
+    ports:
+        - 8183:80
+    environment: 
+        PMA_ARBITRARY: 1
+
+wordpress:
+    image: wordpress
+    ports:
+        - 90:80
+    links:
+        - mysql
+    environment: 
+        WORDPRESS_DB_PASSWORD: admin
